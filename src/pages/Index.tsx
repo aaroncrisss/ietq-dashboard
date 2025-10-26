@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const COLORS = {
-  primary: "hsl(220 85% 45%)",
+  primary: "hsl(220 90% 35%)",
   accent: "hsl(25 95% 55%)",
   secondary: "hsl(220 30% 88%)",
   muted: "hsl(220 20% 92%)",
@@ -73,7 +73,7 @@ const Index = () => {
                 <Church className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Dashboard Iglesia Evangélica</h1>
+                <h1 className="text-2xl font-bold text-foreground">Dashboard IETQ</h1>
                 <p className="text-sm text-muted-foreground">
                   Última actualización: {lastUpdate.toLocaleTimeString()}
                 </p>
@@ -92,46 +92,64 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 space-y-8">
-        {/* Main KPI */}
+        {/* Cumpleaños de la Semana - Primero */}
         <div className="animate-fade-in">
+          <BirthdayCard cumpleanos={metrics.cumpleanosSemana} />
+        </div>
+
+        {/* KPI Grid Principal */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-fade-in" style={{ animationDelay: "0.1s" }}>
           <KPICard
-            title="Miembros Activos del Mes"
+            title="Total Miembros Registrados"
+            value={metrics.totalMiembros}
+            icon={Users}
+            trend="Total en la base de datos"
+          />
+          <KPICard
+            title="Asisten Regularmente"
             value={metrics.miembrosActivos}
             icon={TrendingUp}
-            trend={`${Math.round((metrics.miembrosActivos / metrics.totalMiembros) * 100)}% del total`}
+            trend={`${Math.round((metrics.miembrosActivos / metrics.totalMiembros) * 100)}% asiste frecuentemente`}
             variant="accent"
+          />
+          <KPICard
+            title="Nuevos (< 6 meses)"
+            value={metrics.miembrosNuevos}
+            icon={Activity}
+            trend="Miembros recientes"
           />
         </div>
 
-        {/* KPI Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-          <KPICard
-            title="Total Miembros"
-            value={metrics.totalMiembros}
-            icon={Users}
-          />
+        {/* KPI Grid Secundario */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
           <KPICard
             title="Participan en Grupos"
             value={metrics.participantesGrupos}
             icon={Activity}
-            trend={`${Math.round((metrics.participantesGrupos / metrics.totalMiembros) * 100)}%`}
+            trend={`${Math.round((metrics.participantesGrupos / metrics.totalMiembros) * 100)}% del total`}
           />
           <KPICard
-            title="Acceso a Tecnología"
+            title="Con Acceso Digital"
             value={`${tasaTecnologia}%`}
             icon={Smartphone}
+            trend="Tienen computador"
           />
           <KPICard
             title="Con Transporte Propio"
             value={metrics.miembrosConTransporte}
             icon={Car}
+            trend={`${Math.round((metrics.miembrosConTransporte / metrics.totalMiembros) * 100)}% del total`}
+          />
+          <KPICard
+            title="Comunas Diferentes"
+            value={metrics.distribucionComuna.length}
+            icon={MapPin}
+            trend="Alcance geográfico"
           />
         </div>
 
         {/* Charts Grid */}
         <div className="grid gap-6 lg:grid-cols-2 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          {/* Birthday Card */}
-          <BirthdayCard cumpleanos={metrics.cumpleanosSemana} />
           
           <ChartCard title="Distribución por Género">
             <ResponsiveContainer width="100%" height={300}>
@@ -192,7 +210,7 @@ const Index = () => {
             </ResponsiveContainer>
           </ChartCard>
 
-          <ChartCard title="Asistencia Regular">
+          <ChartCard title="Frecuencia de Asistencia">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -204,6 +222,7 @@ const Index = () => {
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="cantidad"
+                  nameKey="tipo"
                 >
                   {metrics.asistenciaRegular.map((entry, index) => (
                     <Cell 
@@ -212,7 +231,11 @@ const Index = () => {
                     />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={{ 
+                  backgroundColor: "hsl(0 0% 100%)", 
+                  border: "1px solid hsl(220 30% 88%)",
+                  borderRadius: "0.75rem"
+                }} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>

@@ -28,6 +28,7 @@ export interface DashboardMetrics {
   tiempoAsistencia: { tiempo: string; cantidad: number }[];
   miembrosConTransporte: number;
   miembrosActivos: number;
+  miembrosNuevos: number;
   cumpleanosSemana: { nombre: string; fechaNacimiento: string; edad: number; dia: string }[];
 }
 
@@ -180,6 +181,13 @@ export function calculateMetrics(miembros: MiembroIglesia[]): DashboardMetrics {
     m.diasAsistencia.toLowerCase().includes('viernes y domingo')
   ).length;
   
+  // Miembros nuevos (menos de 6 meses asistiendo)
+  const miembrosNuevos = miembros.filter(m => 
+    m.tiempoAsistiendo.toLowerCase().includes('mes') ||
+    m.tiempoAsistiendo.toLowerCase().includes('2-5') ||
+    m.tiempoAsistiendo.toLowerCase().includes('1-3')
+  ).length;
+  
   // Cumpleaños de la semana
   const hoy = new Date();
   const dentroDe7Dias = new Date();
@@ -230,6 +238,7 @@ export function calculateMetrics(miembros: MiembroIglesia[]): DashboardMetrics {
     tiempoAsistencia,
     miembrosConTransporte,
     miembrosActivos,
+    miembrosNuevos,
     cumpleanosSemana,
   };
 }
