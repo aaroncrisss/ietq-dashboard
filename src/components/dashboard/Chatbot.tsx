@@ -11,7 +11,7 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const WEBHOOK_URL = "https://n8n.srv1083284.hstgr.cloud/webhook-test/dashboard-ietq";
+const WEBHOOK_URL = "https://myn8n.aaroncristech.cloud/webhook-test/dashboard-ietq";
 const MAX_MESSAGE_LENGTH = 2000;
 const REQUEST_TIMEOUT = 30000;
 
@@ -90,16 +90,18 @@ export function Chatbot() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
-        // Construct GET URL with query parameters
-        const params = new URLSearchParams({
-          message: userMessage.content,
-          timestamp: userMessage.timestamp.toISOString(),
-          dashboard_context: "registro_iglesia",
-          user_session: `${Date.now()}-${Math.random()}`,
-        });
-
-        const response = await fetch(`${WEBHOOK_URL}?${params.toString()}`, {
-          method: "GET",
+        // POST request with JSON body
+        const response = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: userMessage.content,
+            timestamp: userMessage.timestamp.toISOString(),
+            dashboard_context: "registro_iglesia",
+            user_session: `${Date.now()}-${Math.random()}`,
+          }),
           signal: controller.signal,
         });
 
