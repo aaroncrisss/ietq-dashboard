@@ -90,17 +90,16 @@ export function Chatbot() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
-        const response = await fetch(WEBHOOK_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: userMessage.content,
-            timestamp: userMessage.timestamp.toISOString(),
-            dashboard_context: "registro_iglesia",
-            user_session: `${Date.now()}-${Math.random()}`,
-          }),
+        // Construct GET URL with query parameters
+        const params = new URLSearchParams({
+          message: userMessage.content,
+          timestamp: userMessage.timestamp.toISOString(),
+          dashboard_context: "registro_iglesia",
+          user_session: `${Date.now()}-${Math.random()}`,
+        });
+
+        const response = await fetch(`${WEBHOOK_URL}?${params.toString()}`, {
+          method: "GET",
           signal: controller.signal,
         });
 

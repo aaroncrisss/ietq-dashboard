@@ -28,6 +28,7 @@ export interface DashboardMetrics {
   tiempoAsistencia: { tiempo: string; cantidad: number }[];
   miembrosConTransporte: number;
   miembrosActivos: number;
+  cumpleanosSemana: { nombre: string; fechaNacimiento: string; edad: number; dia: string }[];
 }
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1fdUtE6p0TppmMAQi4Uv206ba8IxXIx8C/export?format=csv";
@@ -179,6 +180,45 @@ export function calculateMetrics(miembros: MiembroIglesia[]): DashboardMetrics {
     m.diasAsistencia.toLowerCase().includes('viernes y domingo')
   ).length;
   
+  // Cumpleaños de la semana
+  const hoy = new Date();
+  const dentroDe7Dias = new Date();
+  dentroDe7Dias.setDate(hoy.getDate() + 7);
+  
+  const cumpleanosSemana = miembros
+    .filter(m => m.fechaNacimiento && m.fechaNacimiento.trim())
+    .map(m => {
+      const fechaParts = m.fechaNacimiento.split('/');
+      if (fechaParts.length !== 3) return null;
+      
+      const dia = parseInt(fechaParts[0]);
+      const mes = parseInt(fechaParts[1]);
+      
+      if (isNaN(dia) || isNaN(mes)) return null;
+      
+      // Crear fecha de cumpleaños este año
+      const cumpleañosEsteAño = new Date(hoy.getFullYear(), mes - 1, dia);
+      
+      // Si ya pasó este año, usar el próximo año
+      if (cumpleañosEsteAño < hoy) {
+        cumpleañosEsteAño.setFullYear(hoy.getFullYear() + 1);
+      }
+      
+      // Verificar si está dentro de los próximos 7 días
+      if (cumpleañosEsteAño >= hoy && cumpleañosEsteAño <= dentroDe7Dias) {
+        const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        return {
+          nombre: m.nombre,
+          fechaNacimiento: m.fechaNacimiento,
+          edad: m.edad,
+          dia: dias[cumpleañosEsteAño.getDay()]
+        };
+      }
+      
+      return null;
+    })
+    .filter(c => c !== null) as { nombre: string; fechaNacimiento: string; edad: number; dia: string }[];
+  
   return {
     totalMiembros,
     distribucionGenero: { masculino, femenino },
@@ -190,5 +230,6 @@ export function calculateMetrics(miembros: MiembroIglesia[]): DashboardMetrics {
     tiempoAsistencia,
     miembrosConTransporte,
     miembrosActivos,
+    cumpleanosSemana,
   };
 }

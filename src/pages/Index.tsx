@@ -4,6 +4,7 @@ import { fetchMiembrosData, calculateMetrics, MiembroIglesia, DashboardMetrics }
 import { KPICard } from "@/components/dashboard/KPICard";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { MembersTable } from "@/components/dashboard/MembersTable";
+import { BirthdayCard } from "@/components/dashboard/BirthdayCard";
 import { Chatbot } from "@/components/dashboard/Chatbot";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -40,10 +41,7 @@ const Index = () => {
 
   useEffect(() => {
     loadData();
-    
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(loadData, 30000);
-    return () => clearInterval(interval);
+    // Removed auto-refresh - only manual refresh via button
   }, []);
 
   if (loading || !metrics) {
@@ -132,6 +130,9 @@ const Index = () => {
 
         {/* Charts Grid */}
         <div className="grid gap-6 lg:grid-cols-2 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+          {/* Birthday Card */}
+          <BirthdayCard cumpleanos={metrics.cumpleanosSemana} />
+          
           <ChartCard title="Distribución por Género">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
