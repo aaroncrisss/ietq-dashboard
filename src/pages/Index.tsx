@@ -6,8 +6,10 @@ import { ChartCard } from "@/components/dashboard/ChartCard";
 import { MembersTable } from "@/components/dashboard/MembersTable";
 import { BirthdayCard } from "@/components/dashboard/BirthdayCard";
 import { TransportDrawer } from "@/components/dashboard/TransportDrawer";
+import { KPIDrawer } from "@/components/dashboard/KPIDrawer";
 import { Chatbot } from "@/components/dashboard/Chatbot";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
@@ -123,18 +125,72 @@ const Index = () => {
 
         {/* KPI Grid Secundario */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
-          <KPICard
+          <KPIDrawer
+            miembros={miembros}
             title="Participan en Grupos"
-            value={metrics.participantesGrupos}
-            icon={Activity}
-            trend={`${Math.round((metrics.participantesGrupos / metrics.totalMiembros) * 100)}% del total`}
-          />
-          <KPICard
+            description="Miembros que participan en grupos o ministerios"
+            filterFn={(m) => m.participaGrupos.toLowerCase().includes('si') || 
+              m.participaGrupos.toLowerCase().includes('joven') ||
+              m.participaGrupos.toLowerCase().includes('dorcas') ||
+              m.participaGrupos.toLowerCase().includes('varon') ||
+              m.participaGrupos.toLowerCase().includes('escuela')}
+            renderItem={(miembro, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all duration-200 animate-fade-in"
+                style={{ animationDelay: `${idx * 30}ms` }}
+              >
+                <div>
+                  <p className="font-medium text-foreground">{miembro.nombre}</p>
+                  <p className="text-xs text-muted-foreground">{miembro.comunaResidencia}</p>
+                </div>
+                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+                  Participa
+                </Badge>
+              </div>
+            )}
+          >
+            <div className="cursor-pointer">
+              <KPICard
+                title="Participan en Grupos"
+                value={metrics.participantesGrupos}
+                icon={Activity}
+                trend={`${Math.round((metrics.participantesGrupos / metrics.totalMiembros) * 100)}% del total`}
+              />
+            </div>
+          </KPIDrawer>
+          
+          <KPIDrawer
+            miembros={miembros}
             title="Con Acceso Digital"
-            value={`${tasaTecnologia}%`}
-            icon={Smartphone}
-            trend="Tienen computador"
-          />
+            description="Miembros que tienen acceso a computador"
+            filterFn={(m) => m.accesoComputador.toLowerCase().includes('si')}
+            renderItem={(miembro, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 transition-all duration-200 animate-fade-in"
+                style={{ animationDelay: `${idx * 30}ms` }}
+              >
+                <div>
+                  <p className="font-medium text-foreground">{miembro.nombre}</p>
+                  <p className="text-xs text-muted-foreground">{miembro.comunaResidencia}</p>
+                </div>
+                <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
+                  <Smartphone className="h-3 w-3 mr-1" />
+                  Digital
+                </Badge>
+              </div>
+            )}
+          >
+            <div className="cursor-pointer">
+              <KPICard
+                title="Con Acceso Digital"
+                value={`${tasaTecnologia}%`}
+                icon={Smartphone}
+                trend="Tienen computador"
+              />
+            </div>
+          </KPIDrawer>
           <TransportDrawer miembros={miembros}>
             <div className="cursor-pointer">
               <KPICard
@@ -145,12 +201,38 @@ const Index = () => {
               />
             </div>
           </TransportDrawer>
-          <KPICard
+          
+          <KPIDrawer
+            miembros={miembros}
             title="Comunas Diferentes"
-            value={metrics.distribucionComuna.length}
-            icon={MapPin}
-            trend="Alcance geográfico"
-          />
+            description="Alcance geográfico de la iglesia"
+            filterFn={() => true}
+            renderItem={(miembro, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border hover:bg-muted transition-all duration-200 animate-fade-in"
+                style={{ animationDelay: `${idx * 30}ms` }}
+              >
+                <div>
+                  <p className="font-medium text-foreground">{miembro.nombre}</p>
+                  <p className="text-xs text-muted-foreground">{miembro.comunaResidencia}</p>
+                </div>
+                <Badge variant="outline" className="bg-accent/10 text-accent border-accent/30">
+                  <MapPin className="h-3 w-3 mr-1" />
+                  {miembro.comunaResidencia}
+                </Badge>
+              </div>
+            )}
+          >
+            <div className="cursor-pointer">
+              <KPICard
+                title="Comunas Diferentes"
+                value={metrics.distribucionComuna.length}
+                icon={MapPin}
+                trend="Alcance geográfico"
+              />
+            </div>
+          </KPIDrawer>
         </div>
 
         {/* Charts Grid */}
@@ -217,32 +299,27 @@ const Index = () => {
 
           <ChartCard title="Frecuencia de Asistencia">
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={metrics.asistenciaRegular}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ tipo, percent }) => `${(percent * 100).toFixed(0)}%`}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="cantidad"
-                  nameKey="tipo"
-                >
-                  {metrics.asistenciaRegular.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={index % 2 === 0 ? COLORS.primary : COLORS.accent} 
-                    />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ 
-                  backgroundColor: "hsl(0 0% 100%)", 
-                  border: "1px solid hsl(220 30% 88%)",
-                  borderRadius: "0.75rem"
-                }} />
-                <Legend />
-              </PieChart>
+              <BarChart data={metrics.asistenciaRegular}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 30% 88%)" />
+                <XAxis 
+                  dataKey="tipo" 
+                  stroke="hsl(220 60% 12%)"
+                  angle={-45}
+                  textAnchor="end"
+                  height={100}
+                  interval={0}
+                  tick={{ fontSize: 11 }}
+                />
+                <YAxis stroke="hsl(220 60% 12%)" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "hsl(0 0% 100%)", 
+                    border: "1px solid hsl(220 30% 88%)",
+                    borderRadius: "0.75rem"
+                  }} 
+                />
+                <Bar dataKey="cantidad" fill={COLORS.primary} radius={[8, 8, 0, 0]} />
+              </BarChart>
             </ResponsiveContainer>
           </ChartCard>
         </div>

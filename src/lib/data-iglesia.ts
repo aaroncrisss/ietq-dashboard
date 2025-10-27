@@ -226,7 +226,8 @@ export function calculateMetrics(miembros: MiembroIglesia[]): DashboardMetrics {
       // Verificar si está dentro de la semana (lunes a domingo)
       if (cumpleañosEsteAño >= inicioSemana && cumpleañosEsteAño <= finSemana) {
         const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-        const isPast = cumpleañosEsteAño < hoy;
+        // isPast incluye hoy y días anteriores de la semana
+        const isPast = cumpleañosEsteAño <= hoy;
         
         return {
           nombre: m.nombre,
