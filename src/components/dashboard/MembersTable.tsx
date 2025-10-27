@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MemberDetailDrawer } from "./MemberDetailDrawer";
-import { Search, Eye } from "lucide-react";
+import { Search, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface MembersTableProps {
@@ -17,6 +17,8 @@ interface MembersTableProps {
 export function MembersTable({ miembros }: MembersTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMinisterios, setSelectedMinisterios] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   
   const toggleMinisterio = (ministerio: string) => {
     setSelectedMinisterios(prev =>
@@ -27,18 +29,33 @@ export function MembersTable({ miembros }: MembersTableProps) {
   };
 
   const filteredMiembros = miembros.filter(m => {
-    const matchesSearch = 
+    const matchesSearch =
       m.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.comunaResidencia.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.participaGrupos.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     if (!matchesSearch) return false;
-    
+
     if (selectedMinisterios.length === 0) return true;
-    
+
     const ministerios = normalizeMinisterios(m.participaGrupos);
     return selectedMinisterios.some(sm => ministerios.includes(sm));
   });
+
+  const totalPages = Math.ceil(filteredMiembros.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentMiembros = filteredMiembros.slice(startIndex, endIndex);
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (ministerio: string) => {
+    toggleMinisterio(ministerio);
+    setCurrentPage(1);
+  };
   
   return (
     <Card className="border-0 shadow-glass backdrop-blur-glass bg-gradient-glass hover-scale transition-all duration-300">
@@ -51,7 +68,7 @@ export function MembersTable({ miembros }: MembersTableProps) {
           <Input
             placeholder="Buscar por nombre, comuna o ministerio..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="pl-10 bg-background/50 border-border focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>
@@ -65,7 +82,7 @@ export function MembersTable({ miembros }: MembersTableProps) {
                 <Checkbox
                   id={ministerio}
                   checked={selectedMinisterios.includes(ministerio)}
-                  onCheckedChange={() => toggleMinisterio(ministerio)}
+                  onCheckedChange={() => handleFilterChange(ministerio)}
                 />
                 <label
                   htmlFor={ministerio}
@@ -79,7 +96,10 @@ export function MembersTable({ miembros }: MembersTableProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setSelectedMinisterios([])}
+                onClick={() => {
+                  setSelectedMinisterios([]);
+                  setCurrentPage(1);
+                }}
                 className="h-6 text-xs"
               >
                 Limpiar filtros
@@ -102,7 +122,7 @@ export function MembersTable({ miembros }: MembersTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredMiembros.slice(0, 10).map((miembro, idx) => {
+              {currentMiembros.map((miembro, idx) => {
                 const ministerios = normalizeMinisterios(miembro.participaGrupos);
                 return (
                   <TableRow 
@@ -153,15 +173,40 @@ export function MembersTable({ miembros }: MembersTableProps) {
             </TableBody>
           </Table>
         </div>
-        {filteredMiembros.length > 10 && (
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Mostrando 10 de {filteredMiembros.length} miembros
-          </p>
-        )}
         {filteredMiembros.length === 0 && (
           <p className="text-center text-muted-foreground py-8">
             No se encontraron resultados
           </p>
+        )}
+        {filteredMiembros.length > 0 && (
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Mostrando {startIndex + 1} a {Math.min(endIndex, filteredMiembros.length)} de {filteredMiembros.length} miembros
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="h-8 w-8 p-0"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Página {currentPage} de {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="h-8 w-8 p-0"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>
