@@ -15,7 +15,8 @@ export default defineConfig({
       "localhost",
       "127.0.0.1",
       // Dominio de Coolify (ajústalo si cambia)
-      "y8s8wcg4kock8woso8okw48c.31.97.163.113.sslip.io"
+      "y8s8wcg4kock8woso8okw48c.31.97.163.113.sslip.io",
+      "https://dashboardietq.proyectosbeta.site"
     ],
   },
   plugins: [react()],
