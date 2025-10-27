@@ -11,10 +11,10 @@ export default defineConfig({
   preview: {
     host: true,
     port: parseInt(process.env.PORT || "4173"),
-    // 🔥 Se listan explícitamente el dominio sslip.io y el local
     allowedHosts: [
       "localhost",
       "127.0.0.1",
+      // Dominio de Coolify (ajústalo si cambia)
       "y8s8wcg4kock8woso8okw48c.31.97.163.113.sslip.io"
     ],
   },
