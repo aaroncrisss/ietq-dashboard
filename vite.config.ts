@@ -5,13 +5,18 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    host: true, // Escucha en 0.0.0.0 (accesible desde Coolify)
-    port: parseInt(process.env.PORT || "8080"), // Usa el puerto definido por Coolify o 8080 por defecto
+    host: true,
+    port: parseInt(process.env.PORT || "8080"),
   },
   preview: {
     host: true,
     port: parseInt(process.env.PORT || "4173"),
-    allowedHosts: [/\.sslip\.io$/], // Permite todos los subdominios *.sslip.io (Coolify)
+    // 🔥 Se listan explícitamente el dominio sslip.io y el local
+    allowedHosts: [
+      "localhost",
+      "127.0.0.1",
+      "y8s8wcg4kock8woso8okw48c.31.97.163.113.sslip.io"
+    ],
   },
   plugins: [react()],
   resolve: {
