@@ -11,7 +11,7 @@ interface KPICardProps {
 
 export function KPICard({ title, value, icon: Icon, trend, variant = "default" }: KPICardProps) {
   return (
-    <Card className={`relative overflow-hidden border-0 shadow-glass backdrop-blur-glass ${
+    <Card className={`group relative overflow-hidden border-0 shadow-glass backdrop-blur-glass transition-all duration-300 hover:scale-[1.02] hover:shadow-glow cursor-pointer ${
       variant === "accent" 
         ? "bg-gradient-accent text-accent-foreground" 
         : "bg-gradient-glass"
@@ -19,7 +19,7 @@ export function KPICard({ title, value, icon: Icon, trend, variant = "default" }
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <p className={`text-sm font-medium ${variant === "accent" ? "text-accent-foreground/80" : "text-muted-foreground"}`}>
+            <p className={`text-sm font-medium transition-colors ${variant === "accent" ? "text-accent-foreground/80" : "text-muted-foreground"}`}>
               {title}
             </p>
             <p className="text-3xl font-bold animate-count-up">
@@ -31,7 +31,7 @@ export function KPICard({ title, value, icon: Icon, trend, variant = "default" }
               </p>
             )}
           </div>
-          <div className={`rounded-xl p-3 ${
+          <div className={`rounded-xl p-3 transition-all duration-300 group-hover:scale-110 ${
             variant === "accent" 
               ? "bg-accent-foreground/20" 
               : "bg-primary/10"
@@ -44,7 +44,7 @@ export function KPICard({ title, value, icon: Icon, trend, variant = "default" }
           </div>
         </div>
       </div>
-      <div className={`absolute bottom-0 left-0 h-1 w-full ${
+      <div className={`absolute bottom-0 left-0 h-1 w-full transition-all duration-300 group-hover:h-2 ${
         variant === "accent" 
           ? "bg-accent-foreground/30" 
           : "bg-gradient-primary"

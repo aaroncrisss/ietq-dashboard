@@ -29,7 +29,7 @@ export interface DashboardMetrics {
   miembrosConTransporte: number;
   miembrosActivos: number;
   miembrosNuevos: number;
-  cumpleanosSemana: { nombre: string; fechaNacimiento: string; edad: number; dia: string }[];
+  cumpleanosSemana: { nombre: string; fechaNacimiento: string; edad: number; dia: string; date: Date; isPast: boolean }[];
 }
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1fdUtE6p0TppmMAQi4Uv206ba8IxXIx8C/export?format=csv";
@@ -188,10 +188,20 @@ export function calculateMetrics(miembros: MiembroIglesia[]): DashboardMetrics {
     m.tiempoAsistiendo.toLowerCase().includes('1-3')
   ).length;
   
-  // Cumpleaños de la semana
+  // Cumpleaños de la semana (lunes a domingo)
   const hoy = new Date();
-  const dentroDe7Dias = new Date();
-  dentroDe7Dias.setDate(hoy.getDate() + 7);
+  hoy.setHours(0, 0, 0, 0);
+  
+  // Calcular inicio de semana (lunes)
+  const diaSemana = hoy.getDay();
+  const diff = diaSemana === 0 ? -6 : 1 - diaSemana;
+  const inicioSemana = new Date(hoy);
+  inicioSemana.setDate(hoy.getDate() + diff);
+  
+  // Calcular fin de semana (domingo)
+  const finSemana = new Date(inicioSemana);
+  finSemana.setDate(inicioSemana.getDate() + 6);
+  finSemana.setHours(23, 59, 59, 999);
   
   const cumpleanosSemana = miembros
     .filter(m => m.fechaNacimiento && m.fechaNacimiento.trim())
@@ -206,26 +216,32 @@ export function calculateMetrics(miembros: MiembroIglesia[]): DashboardMetrics {
       
       // Crear fecha de cumpleaños este año
       const cumpleañosEsteAño = new Date(hoy.getFullYear(), mes - 1, dia);
+      cumpleañosEsteAño.setHours(0, 0, 0, 0);
       
       // Si ya pasó este año, usar el próximo año
-      if (cumpleañosEsteAño < hoy) {
+      if (cumpleañosEsteAño < inicioSemana) {
         cumpleañosEsteAño.setFullYear(hoy.getFullYear() + 1);
       }
       
-      // Verificar si está dentro de los próximos 7 días
-      if (cumpleañosEsteAño >= hoy && cumpleañosEsteAño <= dentroDe7Dias) {
+      // Verificar si está dentro de la semana (lunes a domingo)
+      if (cumpleañosEsteAño >= inicioSemana && cumpleañosEsteAño <= finSemana) {
         const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const isPast = cumpleañosEsteAño < hoy;
+        
         return {
           nombre: m.nombre,
           fechaNacimiento: m.fechaNacimiento,
           edad: m.edad,
-          dia: dias[cumpleañosEsteAño.getDay()]
+          dia: dias[cumpleañosEsteAño.getDay()],
+          date: cumpleañosEsteAño,
+          isPast
         };
       }
       
       return null;
     })
-    .filter(c => c !== null) as { nombre: string; fechaNacimiento: string; edad: number; dia: string }[];
+    .filter(c => c !== null)
+    .sort((a, b) => a!.date.getTime() - b!.date.getTime()) as { nombre: string; fechaNacimiento: string; edad: number; dia: string; date: Date; isPast: boolean }[];
   
   return {
     totalMiembros,

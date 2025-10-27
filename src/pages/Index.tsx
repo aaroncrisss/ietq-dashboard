@@ -5,6 +5,7 @@ import { KPICard } from "@/components/dashboard/KPICard";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { MembersTable } from "@/components/dashboard/MembersTable";
 import { BirthdayCard } from "@/components/dashboard/BirthdayCard";
+import { TransportDrawer } from "@/components/dashboard/TransportDrawer";
 import { Chatbot } from "@/components/dashboard/Chatbot";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -134,12 +135,16 @@ const Index = () => {
             icon={Smartphone}
             trend="Tienen computador"
           />
-          <KPICard
-            title="Con Transporte Propio"
-            value={metrics.miembrosConTransporte}
-            icon={Car}
-            trend={`${Math.round((metrics.miembrosConTransporte / metrics.totalMiembros) * 100)}% del total`}
-          />
+          <TransportDrawer miembros={miembros}>
+            <div className="cursor-pointer">
+              <KPICard
+                title="Con Transporte Propio"
+                value={metrics.miembrosConTransporte}
+                icon={Car}
+                trend={`${Math.round((metrics.miembrosConTransporte / metrics.totalMiembros) * 100)}% del total`}
+              />
+            </div>
+          </TransportDrawer>
           <KPICard
             title="Comunas Diferentes"
             value={metrics.distribucionComuna.length}
