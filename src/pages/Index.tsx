@@ -72,9 +72,11 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-gradient-primary p-2">
-                <Church className="h-6 w-6 text-primary-foreground" />
-              </div>
+              <img
+                src="/logo-ietq.png"
+                alt="IETQ Logo"
+                className="h-12 w-12 rounded-lg object-contain"
+              />
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Dashboard IETQ</h1>
                 <p className="text-sm text-muted-foreground">
