@@ -97,7 +97,7 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Cumpleaños de la Semana - Primero */}
         <div className="animate-fade-in">
-          <BirthdayCard cumpleanos={metrics.cumpleanosSemana} />
+          <BirthdayCard cumpleanos={metrics.cumpleanosSemana} todosLosMiembros={miembros} />
         </div>
 
         {/* KPI Grid Principal */}

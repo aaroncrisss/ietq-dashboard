@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Cake, Search } from "lucide-react";
+import type { MiembroIglesia } from "@/lib/data-iglesia";
 
 interface Birthday {
   nombre: string;
@@ -14,14 +15,55 @@ interface Birthday {
 
 interface BirthdayCardProps {
   cumpleanos: Birthday[];
+  todosLosMiembros: MiembroIglesia[];
 }
 
-export function BirthdayCard({ cumpleanos }: BirthdayCardProps) {
+export function BirthdayCard({ cumpleanos, todosLosMiembros }: BirthdayCardProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredCumpleanos = cumpleanos.filter(persona =>
-    persona.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCumpleanos = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return cumpleanos;
+    }
+
+    // Buscar en todos los miembros
+    const searchLower = searchTerm.toLowerCase();
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    return todosLosMiembros
+      .filter(m => m.nombre.toLowerCase().includes(searchLower) && m.fechaNacimiento?.trim())
+      .map(m => {
+        const fechaParts = m.fechaNacimiento.split('/');
+        if (fechaParts.length !== 3) return null;
+        
+        const dia = parseInt(fechaParts[0]);
+        const mes = parseInt(fechaParts[1]);
+        
+        if (isNaN(dia) || isNaN(mes)) return null;
+        
+        const cumpleañosEsteAño = new Date(hoy.getFullYear(), mes - 1, dia);
+        cumpleañosEsteAño.setHours(0, 0, 0, 0);
+        
+        if (cumpleañosEsteAño < hoy) {
+          cumpleañosEsteAño.setFullYear(hoy.getFullYear() + 1);
+        }
+        
+        const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const isPast = cumpleañosEsteAño <= hoy;
+        
+        return {
+          nombre: m.nombre,
+          fechaNacimiento: m.fechaNacimiento,
+          edad: m.edad,
+          dia: dias[cumpleañosEsteAño.getDay()],
+          date: cumpleañosEsteAño,
+          isPast
+        };
+      })
+      .filter((c): c is Birthday => c !== null)
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [searchTerm, cumpleanos, todosLosMiembros]);
 
   return (
     <Card className="border-0 shadow-glass backdrop-blur-glass bg-gradient-glass hover-scale transition-all duration-300">
