@@ -192,7 +192,7 @@ export function Chatbot() {
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-gradient-primary shadow-glow hover:shadow-xl transition-all animate-glow-pulse"
+          className="fixed bottom-6 left-6 h-14 w-14 rounded-full bg-gradient-primary shadow-glow hover:shadow-xl transition-all animate-glow-pulse z-40"
           size="icon"
         >
           <MessageCircle className="h-6 w-6" />
@@ -200,7 +200,7 @@ export function Chatbot() {
       )}
 
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-96 h-[600px] border-0 shadow-glass backdrop-blur-glass bg-gradient-glass flex flex-col animate-scale-in">
+        <Card className="fixed bottom-6 left-6 w-96 h-[600px] border-0 shadow-glass backdrop-blur-glass bg-gradient-glass flex flex-col animate-scale-in z-40">
           <div className="flex items-center justify-between p-4 border-b border-border bg-primary/5">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-primary" />
