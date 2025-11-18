@@ -7,134 +7,17 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
-      asistencias: {
-        Row: {
-          id: number
-          rut: string | null
-          nombre: string
-          fecha_registro: string
-          fecha_culto: string
-          dia_semana_culto: string
-          asistio: boolean | null
-          frecuencia_declarada: string | null
-          tipo_registro: string | null
-          ip_registro: string | null
-          user_agent: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: number
-          rut?: string | null
-          nombre: string
-          fecha_registro: string
-          fecha_culto: string
-          dia_semana_culto: string
-          asistio?: boolean | null
-          frecuencia_declarada?: string | null
-          tipo_registro?: string | null
-          ip_registro?: string | null
-          user_agent?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: number
-          rut?: string | null
-          nombre?: string
-          fecha_registro?: string
-          fecha_culto?: string
-          dia_semana_culto?: string
-          asistio?: boolean | null
-          frecuencia_declarada?: string | null
-          tipo_registro?: string | null
-          ip_registro?: string | null
-          user_agent?: string | null
-          created_at?: string | null
-        }
-        Relationships: []
-      }
-      miembros: {
-        Row: {
-          id: number
-          nombre: string
-          rut: string | null
-          frecuencia_declarada: string | null
-          tipo_registro: string | null
-          es_activo: boolean | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: number
-          nombre: string
-          rut?: string | null
-          frecuencia_declarada?: string | null
-          tipo_registro?: string | null
-          es_activo?: boolean | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: number
-          nombre?: string
-          rut?: string | null
-          frecuencia_declarada?: string | null
-          tipo_registro?: string | null
-          es_activo?: boolean | null
-          created_at?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
-      asistencias_por_persona: {
-        Row: {
-          rut: string | null
-          nombre: string | null
-          tipo_registro: string | null
-          total_asistencias: number | null
-          ultima_asistencia: string | null
-          asistencias_confirmadas: number | null
-        }
-        Relationships: []
-      }
-      asistencias_ultimos_60_dias: {
-        Row: {
-          id: number | null
-          rut: string | null
-          nombre: string | null
-          fecha_registro: string | null
-          fecha_culto: string | null
-          dia_semana_culto: string | null
-          asistio: boolean | null
-          frecuencia_declarada: string | null
-          tipo_registro: string | null
-        }
-        Relationships: []
-      }
-      asistencias_mensuales: {
-        Row: {
-          mes: string | null
-          dia_semana_culto: string | null
-          total_asistencias: number | null
-        }
-        Relationships: []
-      }
-      faltas_consecutivas: {
-        Row: {
-          miembro_id: number | null
-          nombre: string | null
-          rut: string | null
-          frecuencia_declarada: string | null
-          tipo_registro: string | null
-          tipo_alerta: string | null
-          detalle: string | null
-          ultimas_fechas: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       [_ in never]: never
