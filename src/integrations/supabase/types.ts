@@ -14,10 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      asistencias: {
+        Row: {
+          asistio: boolean
+          created_at: string
+          dia_semana_culto: string
+          fecha_culto: string
+          fecha_registro: string
+          frecuencia_declarada: string
+          id: string
+          ip_registro: string | null
+          nombre: string
+          rut: string
+          tipo_registro: string
+          user_agent: string | null
+        }
+        Insert: {
+          asistio: boolean
+          created_at?: string
+          dia_semana_culto: string
+          fecha_culto: string
+          fecha_registro?: string
+          frecuencia_declarada: string
+          id?: string
+          ip_registro?: string | null
+          nombre: string
+          rut: string
+          tipo_registro: string
+          user_agent?: string | null
+        }
+        Update: {
+          asistio?: boolean
+          created_at?: string
+          dia_semana_culto?: string
+          fecha_culto?: string
+          fecha_registro?: string
+          frecuencia_declarada?: string
+          id?: string
+          ip_registro?: string | null
+          nombre?: string
+          rut?: string
+          tipo_registro?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      miembros: {
+        Row: {
+          created_at: string
+          es_activo: boolean
+          frecuencia_declarada: string
+          id: string
+          nombre: string
+          rut: string
+          tipo_registro: string
+          ultima_asistencia: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          es_activo?: boolean
+          frecuencia_declarada: string
+          id?: string
+          nombre: string
+          rut: string
+          tipo_registro: string
+          ultima_asistencia?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          es_activo?: boolean
+          frecuencia_declarada?: string
+          id?: string
+          nombre?: string
+          rut?: string
+          tipo_registro?: string
+          ultima_asistencia?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      asistencias_por_persona: {
+        Row: {
+          asistencias: number | null
+          faltas: number | null
+          frecuencia_declarada: string | null
+          miembro_id: string | null
+          nombre: string | null
+          rut: string | null
+          tipo_registro: string | null
+          total_asistencias: number | null
+          ultima_fecha: string | null
+        }
+        Relationships: []
+      }
+      asistencias_ultimos_60_dias: {
+        Row: {
+          ausentes: number | null
+          fecha_culto: string | null
+          presentes: number | null
+          total: number | null
+        }
+        Relationships: []
+      }
+      faltas_consecutivas: {
+        Row: {
+          detalle: string | null
+          faltas_consecutivas: number | null
+          frecuencia_declarada: string | null
+          miembro_id: string | null
+          nombre: string | null
+          rut: string | null
+          tipo_alerta: string | null
+          ultimas_fechas: string[] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
